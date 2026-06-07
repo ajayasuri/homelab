@@ -1,0 +1,24 @@
+# /etc/network/interfaces  (pve1, static IPv4 excerpt)
+#
+# Private addressing is shown intentionally. 192.168.x.x is RFC1918 and
+# reveals nothing useful. The physical NIC name (eno1 here) is device
+# specific; check yours with `ip link`. Interface names were pinned in BIOS
+# for stability.
+
+auto lo
+iface lo inet loopback
+
+iface eno1 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+    address 192.168.1.10/24
+    gateway 192.168.1.1
+    bridge-ports eno1
+    bridge-stp off
+    bridge-fd 0
+
+# IPv6 left unconfigured on purpose. The installer auto-filled an
+# ISP-assigned IPv6 address; every network field was overridden to static
+# IPv4 by hand before committing.
+iface vmbr0 inet6 manual

@@ -1,0 +1,25 @@
+# /etc/wireguard/wg0.conf  (hub, road-warrior server on vpn1)
+#
+# Real keys live only on the host. This committed copy uses placeholders.
+# Copy to wg0.conf, fill the placeholders, then: wg-quick up wg0
+# (or enable persistently with: systemctl enable --now wg-quick@wg0)
+
+[Interface]
+Address = 10.10.10.1/24
+ListenPort = 51820
+PrivateKey = <HUB_PRIVATE_KEY>
+
+# Route tunnel clients out to the LAN as the hub (the road-warrior pattern,
+# so no static routes are needed on the LAN side). eth0 is the container's
+# interface. Requires net.ipv4.ip_forward = 1 on the host, persisted via
+# /etc/sysctl.d/ rather than set by hand each boot.
+PostUp   = iptables -t nat -A POSTROUTING -s 10.10.10.0/24 -o eth0 -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -s 10.10.10.0/24 -o eth0 -j MASQUERADE
+
+# --- Peer: phone (client1) ---
+# On the hub, a peer's AllowedIPs is just that peer's tunnel address (/32).
+# This is cryptokey routing: the public key maps to exactly which source
+# addresses that peer is allowed to use and where return traffic is sent.
+[Peer]
+PublicKey = <CLIENT1_PUBLIC_KEY>
+AllowedIPs = 10.10.10.2/32

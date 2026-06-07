@@ -1,0 +1,14 @@
+# macOS noise
+.DS_Store
+
+# Never commit real key-bearing configs. Only *.sample versions belong here.
+configs/**/wg0.conf
+configs/**/client.conf
+configs/**/*.key
+*.priv
+*.pem
+wg-*.conf
+
+# Editor temp
+*.swp
+*~

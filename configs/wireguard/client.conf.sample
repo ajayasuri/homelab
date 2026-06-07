@@ -1,0 +1,25 @@
+# client (phone) WireGuard config  (split-tunnel road-warrior)
+#
+# Imported into the WireGuard mobile app, e.g. by scanning a QR generated
+# with qrencode. Placeholders below; real keys never leave the devices.
+
+[Interface]
+Address = 10.10.10.2/32
+PrivateKey = <CLIENT1_PRIVATE_KEY>
+# DNS line omitted on purpose for a split tunnel: only LAN-bound traffic is
+# tunnelled, so local resolution handles everything else. Add a DNS line
+# only if you switch to a full tunnel.
+
+[Peer]
+PublicKey = <HUB_PUBLIC_KEY>
+# Point at the home WAN address, or better, a DDNS hostname so a changing
+# residential IP does not break the tunnel.
+Endpoint = <HOME_DDNS_HOSTNAME>:51820
+
+# Split tunnel: only the home LAN and the tunnel subnet route through the VPN.
+# For a full tunnel on untrusted wifi (all traffic through home), use:
+#   AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 192.168.1.0/24, 10.10.10.0/24
+
+# Hold the NAT mapping open from behind the phone carrier's network.
+PersistentKeepalive = 25

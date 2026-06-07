@@ -1,0 +1,23 @@
+# /etc/pve/lxc/102.conf  (vpn1, unprivileged Debian 13 LXC)
+#
+# The two lxc.* lines at the bottom are the whole point of this file: they
+# pass the host's TUN device into an unprivileged container, which is what
+# lets kernel WireGuard create wg0 inside it.
+#
+# IMPORTANT: changes to lxc.mount.entry apply only on a full stop and start
+# (pct stop 102 && pct start 102), never on a soft reboot from inside.
+
+arch: amd64
+cores: 1
+memory: 512
+swap: 512
+hostname: vpn1
+ostype: debian
+unprivileged: 1
+rootfs: local-zfs:subvol-102-disk-0,size=4G
+net0: name=eth0,bridge=vmbr0,firewall=1,gw=192.168.1.1,ip=192.168.1.2/24,type=veth
+
+# --- TUN passthrough for WireGuard ---
+# c 10:200 = the character device major:minor for /dev/net/tun.
+lxc.cgroup2.devices.allow: c 10:200 rwm
+lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
